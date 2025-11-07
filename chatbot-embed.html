@@ -1,0 +1,149 @@
+<!-- Bắt đầu: Mã nhúng Trợ lý AI Học Liệu Số -->
+<style>
+  #hls-ai-assistant-button {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background-color: #4f46e5; /* indigo-600 */
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    z-index: 9998;
+    transition: transform 0.2s ease-in-out, background-color 0.2s;
+  }
+  #hls-ai-assistant-button:hover {
+    transform: scale(1.1);
+    background-color: #4338ca; /* indigo-700 */
+  }
+  #hls-ai-assistant-button svg {
+    width: 32px;
+    height: 32px;
+    color: white;
+    transition: transform 0.3s ease-in-out, opacity 0.3s ease-in-out;
+  }
+  #hls-ai-assistant-container {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    width: 90vw;
+    max-width: 400px;
+    height: 70vh;
+    max-height: 600px;
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    opacity: 0;
+    visibility: hidden;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out, visibility 0.2s;
+    display: flex;
+    flex-direction: column;
+    background-color: #0f172a; /* slate-900 */
+  }
+  #hls-ai-assistant-container.open {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+  }
+  #hls-ai-assistant-iframe {
+    width: 100%;
+    height: 100%;
+    border: none;
+  }
+  #hls-chat-icon, #hls-close-icon {
+    position: absolute;
+  }
+  #hls-close-icon {
+    transform: rotate(-90deg);
+    opacity: 0;
+  }
+  #hls-ai-assistant-button.open #hls-chat-icon {
+    transform: rotate(90deg);
+    opacity: 0;
+  }
+  #hls-ai-assistant-button.open #hls-close-icon {
+    transform: rotate(0deg);
+    opacity: 1;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 480px) {
+    #hls-ai-assistant-container {
+      bottom: 0;
+      right: 0;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+      transition: none;
+    }
+    #hls-ai-assistant-button {
+      bottom: 15px;
+      right: 15px;
+    }
+  }
+</style>
+
+<div id="hls-ai-assistant-button" title="Trợ lý AI Học Liệu Số">
+  <svg id="hls-chat-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 0 1-.923 1.785A5.969 5.969 0 0 0 6 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337Z" />
+  </svg>
+  <svg id="hls-close-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+  </svg>
+</div>
+
+<div id="hls-ai-assistant-container">
+  <iframe id="hls-ai-assistant-iframe" title="Trợ lý AI Học Liệu Số Chat"></iframe>
+</div>
+
+<script>
+  (function() {
+    // !!!!!!!!! QUAN TRỌNG !!!!!!!!!
+    // Thay thế 'YOUR_CHATBOT_URL_HERE' bằng URL thực tế nơi bạn đã triển khai ứng dụng chatbot.
+    // Ví dụ: 'https://my-chatbot-app.netlify.app'
+    const chatbotUrl = 'YOUR_CHATBOT_URL_HERE';
+    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    const button = document.getElementById('hls-ai-assistant-button');
+    const container = document.getElementById('hls-ai-assistant-container');
+    const iframe = document.getElementById('hls-ai-assistant-iframe');
+    let isChatOpen = false;
+    let isIframeLoaded = false;
+
+    button.addEventListener('click', () => {
+      isChatOpen = !isChatOpen;
+      container.classList.toggle('open', isChatOpen);
+      button.classList.toggle('open', isChatOpen);
+      
+      if (isChatOpen && !isIframeLoaded) {
+        if (chatbotUrl === 'YOUR_CHATBOT_URL_HERE' || chatbotUrl.trim() === '') {
+            console.error('Vui lòng đặt URL chatbot trong mã nhúng.');
+            const placeholder = document.createElement('div');
+            placeholder.style.cssText = 'display:flex;align-items:center;justify-content:center;height:100%;color:white;padding:20px;text-align:center;font-family:sans-serif;font-size:16px;';
+            placeholder.innerText = 'Lỗi cấu hình: Vui lòng đặt URL chatbot hợp lệ trong mã nhúng.';
+            // Ensure we don't add multiple placeholders
+            if (!container.querySelector('.error-placeholder')) {
+                placeholder.className = 'error-placeholder';
+                container.appendChild(placeholder);
+            }
+        } else {
+            iframe.src = chatbotUrl;
+            isIframeLoaded = true;
+        }
+      }
+    });
+  })();
+</script>
+<!-- Kết thúc: Mã nhúng Trợ lý AI Học Liệu Số -->
